@@ -40,14 +40,31 @@ export default function MosaicRevealCard({
       className={`relative overflow-hidden group rounded-xl shadow-lg ${className}`}
       onMouseEnter={() => enableHover && setIsHovered(true)}
       onMouseLeave={() => enableHover && setIsHovered(false)}
+      onFocus={() => enableHover && setIsHovered(true)}
+      onBlur={() => enableHover && setIsHovered(false)}
       onClick={() => !enableHover && setIsHovered(!isHovered)}
+      tabIndex={0}
+      role="button"
+      aria-expanded={isHovered}
+      aria-label={title ? `${title} — hover or focus to reveal details` : "Reveal details"}
     >
       {/* Content to Reveal (Background) */}
-      <div className="absolute inset-0 z-0 bg-slate-50 flex flex-col items-center justify-center p-6 text-center text-slate-900 h-full w-full border border-slate-200">
-        {revealTitle && <h3 className="text-xl font-bold mb-2 text-teal-600">{revealTitle}</h3>}
-        <div className="text-sm md:text-base text-slate-600 leading-relaxed">
+      <div className="absolute inset-0 z-0 bg-gradient-to-br from-[var(--card-bg-reveal)] to-[var(--surface-subtle)] flex flex-col items-center justify-center p-6 text-center h-full w-full">
+        {revealTitle && (
+          <div className="mb-3">
+            <span className="inline-block w-8 h-0.5 bg-teal-500 mb-2"></span>
+            <h3 className="text-xl font-bold text-[var(--foreground)]">{revealTitle}</h3>
+          </div>
+        )}
+        <div className="text-sm md:text-base text-[var(--muted)] leading-relaxed max-w-[90%]">
             {revealContent}
         </div>
+        <span className="mt-4 inline-flex items-center text-xs font-medium text-teal-600 uppercase tracking-wider">
+          Learn more
+          <svg className="ml-1 w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+          </svg>
+        </span>
       </div>
 
       {/* Mosaic Tiles (Foreground) */}
@@ -67,14 +84,14 @@ export default function MosaicRevealCard({
             initial={false}
             animate={isHovered ? { 
                 opacity: 0, 
-                scale: 0.8, 
-                filter: "blur(5px)",
-                y: -20,
+            scale: 0.88, 
+            filter: "blur(4px)",
+            y: -14,
                 transition: { 
-                    duration: 0.3,
+              duration: 0.55,
                     // Simple diagonal wave
-                    delay: (tile.col + tile.row) * 0.02,
-                    ease: "circIn"
+              delay: (tile.col + tile.row) * 0.03,
+              ease: "easeInOut"
                 }
             } : { 
                 opacity: 1, 
@@ -82,9 +99,9 @@ export default function MosaicRevealCard({
                 filter: "blur(0px)", 
                 y: 0,
                 transition: { 
-                    duration: 0.3, 
-                    delay: (rows + cols - (tile.col + tile.row)) * 0.015, // Reverse wave on enter
-                    ease: "circOut"
+              duration: 0.55, 
+              delay: (rows + cols - (tile.col + tile.row)) * 0.02,
+              ease: "easeInOut"
                 }
             }}
             className="w-full h-full relative bg-slate-200 will-change-transform"
@@ -100,13 +117,17 @@ export default function MosaicRevealCard({
       {/* Title Overlay on Cover */}
       <motion.div 
         animate={{ opacity: isHovered ? 0 : 1 }}
-        transition={{ duration: 0.3 }}
-        className="absolute inset-0 z-20 flex items-center justify-center pointer-events-none bg-black/30 group-hover:bg-transparent transition-colors"
+        transition={{ duration: 0.45, ease: "easeInOut" }}
+        className="absolute inset-0 z-20 flex items-end justify-start pointer-events-none"
       >
+        <div className="absolute inset-0 bg-gradient-to-t from-slate-900/70 via-slate-900/20 to-transparent" />
         {title && (
-            <h3 className="text-white text-2xl md:text-3xl font-bold uppercase tracking-widest text-center px-4 drop-shadow-lg">
+          <div className="relative p-4">
+            <span className="inline-block w-6 h-0.5 bg-teal-400 mb-2"></span>
+            <h3 className="text-white text-lg md:text-xl font-bold tracking-wide drop-shadow-lg">
                 {title}
             </h3>
+          </div>
         )}
       </motion.div>
     </div>

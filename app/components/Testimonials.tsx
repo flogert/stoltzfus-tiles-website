@@ -1,12 +1,13 @@
 "use client";
 
 import { motion } from "framer-motion";
+import IsometricGridBg from "./IsometricGridBg";
 
 const testimonials = [
   {
     name: "Sarah M.",
     location: "Lititz, PA",
-    text: "Stoltzfus Tiles completely transformed our master bathroom. The tile work is flawless — every line is straight, every corner is perfect. Finished on time with a clean, respectful crew. Highly recommend!",
+    text: "Stoltzfus Custom Tile completely transformed our master bathroom. The tile work is flawless — every line is straight, every corner is perfect. Finished on time with a clean, respectful crew. Highly recommend!",
     rating: 5,
     project: "Master Bathroom Remodel",
   },
@@ -37,21 +38,22 @@ export default function Testimonials() {
   return (
     <section
       id="testimonials"
-      className="section-padding bg-linear-to-br from-slate-50 via-white to-slate-100"
+      className="section-padding relative overflow-hidden"
       aria-labelledby="testimonials-heading"
     >
-      <div className="mx-auto max-w-7xl">
+      <IsometricGridBg decorative className="opacity-[0.18] z-0" />
+      <div className="relative z-10 mx-auto max-w-7xl">
         <div className="mx-auto max-w-2xl text-center">
           <span className="text-sm font-semibold uppercase tracking-widest text-teal-600">
             Client Reviews
           </span>
           <h2
             id="testimonials-heading"
-            className="mt-2 text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl"
+            className="mt-2 text-3xl font-bold tracking-tight text-[var(--foreground)] sm:text-4xl"
           >
             What Our Clients Say
           </h2>
-          <p className="mt-3 text-base leading-relaxed text-slate-600">
+          <p className="mt-3 text-base leading-relaxed text-[var(--muted)]">
             Hear from homeowners and contractors across Lancaster County.
           </p>
         </div>
@@ -64,9 +66,9 @@ export default function Testimonials() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-40px" }}
               transition={{ delay: i * 0.1, duration: 0.5 }}
-              className="relative rounded-2xl border border-slate-100 bg-white p-6 shadow-sm shadow-slate-200/50"
+              className="relative rounded-2xl border border-slate-100 border-t-2 border-t-teal-500 bg-white p-6 shadow-sm shadow-slate-200/50"
             >
-              <div className="mb-4 flex gap-1">
+              <div className="mb-4 flex gap-1" role="img" aria-label={`Rating: ${t.rating} out of 5 stars`}>
                 {Array.from({ length: t.rating }).map((_, j) => (
                   <svg
                     key={j}

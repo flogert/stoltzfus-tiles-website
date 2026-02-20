@@ -1,18 +1,17 @@
 "use client";
 
-import { motion, useScroll, useSpring, useTransform } from "framer-motion";
+import { motion, useScroll, useTransform } from "framer-motion";
 
 export default function ScrollProgressTiles() {
   const { scrollYProgress } = useScroll();
-  const scaleY = useSpring(scrollYProgress, {
-    stiffness: 100,
-    damping: 30,
-    restDelta: 0.001
-  });
 
   // Vertical stack of tiles on the right edge
   return (
-    <div className="fixed right-3 md:right-6 top-1/2 -translate-y-1/2 z-40 hidden lg:flex flex-col gap-1.5 pointer-events-none">
+    <div
+      className="fixed right-3 md:right-6 top-1/2 -translate-y-1/2 z-40 hidden lg:flex flex-col gap-1.5 pointer-events-none"
+      aria-hidden="true"
+      role="presentation"
+    >
       {Array.from({ length: 20 }).map((_, i) => (
         <Tile key={i} index={i} total={20} scrollYProgress={scrollYProgress} />
       ))}

@@ -1,35 +1,31 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
-import TileCanvas from "./components/TileCanvas";
+import { Outfit } from "next/font/google";
 import ScrollProgressTiles from "./components/ScrollProgressTiles";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const outfit = Outfit({
+  variable: "--font-outfit",
   subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
+  weight: ["300", "400", "500", "600", "700", "800"],
+  display: "swap",
 });
 
 /* ── SEO & Open-Graph metadata ── */
-const siteUrl = "https://stoltzfustiles.com";
-const title = "Stoltzfus Tiles | Professional Tile Installation in Lancaster County, PA";
+const siteUrl = "https://stoltzfuscustomtiles.com";
+const title = "Stoltzfus Custom Tile | Professional Tile Installation in Lancaster County, PA";
 const description =
-  "Stoltzfus Tiles is Lancaster County's trusted tile expert specializing in bathroom remodeling, kitchen backsplashes, flooring, and custom tilework. Free estimates — call today!";
+  "Stoltzfus Custom Tile is Lancaster County's trusted tile expert specializing in bathroom remodeling, kitchen backsplashes, flooring, and custom tilework. Free estimates — call today!";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
     default: title,
-    template: "%s | Stoltzfus Tiles",
+    template: "%s | Stoltzfus Custom Tile",
   },
   icons: {
-    icon: "/stoltzfus.png",
-    shortcut: "/stoltzfus.png",
-    apple: "/stoltzfus.png",
+    icon: "/favicon.svg",
+    shortcut: "/favicon.svg",
+    apple: "/favicon.svg",
   },
   description,
   keywords: [
@@ -40,15 +36,15 @@ export const metadata: Metadata = {
     "bathroom remodeling Lancaster PA",
     "tile flooring installation",
     "custom tilework Pennsylvania",
-    "Stoltzfus Tiles",
+    "Stoltzfus Custom Tile",
   ],
-  authors: [{ name: "Stoltzfus Tiles" }],
-  creator: "Stoltzfus Tiles",
+  authors: [{ name: "Stoltzfus Custom Tile" }],
+  creator: "Stoltzfus Custom Tile",
   openGraph: {
     type: "website",
     locale: "en_US",
     url: siteUrl,
-    siteName: "Stoltzfus Tiles",
+    siteName: "Stoltzfus Custom Tile",
     title,
     description,
     images: [
@@ -56,7 +52,7 @@ export const metadata: Metadata = {
         url: "/og-image.jpg",
         width: 1200,
         height: 630,
-        alt: "Stoltzfus Tiles – Expert Tile Installation in Lancaster County",
+        alt: "Stoltzfus Custom Tile – Expert Tile Installation in Lancaster County",
       },
     ],
   },
@@ -83,7 +79,7 @@ export default function RootLayout({
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "HomeAndConstructionBusiness",
-    name: "Stoltzfus Tiles",
+    name: "Stoltzfus Custom Tile",
     description,
     url: siteUrl,
     telephone: "+1-717-555-0142",
@@ -126,12 +122,11 @@ export default function RootLayout({
         />
       </head>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${outfit.variable} antialiased`}
       >
         <a href="#main-content" className="skip-link">
           Skip to main content
         </a>
-        <TileCanvas />
         <ScrollProgressTiles />
         {children}
       </body>

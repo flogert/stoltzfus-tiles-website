@@ -2,11 +2,11 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import Image from "next/image";
 
 const navLinks = [
   { label: "Services", href: "#services" },
   { label: "Gallery", href: "#gallery" },
-  { label: "About", href: "#about" },
   { label: "Reviews", href: "#testimonials" },
   { label: "Contact", href: "#contact" },
 ];
@@ -29,32 +29,53 @@ export default function Header() {
   }, [mobileOpen]);
 
   const closeMobile = useCallback(() => setMobileOpen(false), []);
-
-  const headerBg = scrolled
-    ? "bg-white/95 backdrop-blur-md shadow-slate-200/50"
-    : "bg-transparent";
-
-  // Slate-blue/Teal burger colors
-  const tileColors = [
-    mobileOpen ? "bg-teal-500 rotate-45 translate-x-[3px] translate-y-[3px]" : "bg-slate-700",
-    mobileOpen ? "bg-slate-300 -rotate-45 -translate-x-[3px] translate-y-[3px]" : "bg-slate-500",
-    mobileOpen ? "bg-slate-300 rotate-45 translate-x-[3px] -translate-y-[3px]" : "bg-slate-500",
-    mobileOpen ? "bg-teal-500 -rotate-45 -translate-x-[3px] -translate-y-[3px]" : "bg-slate-700",
-  ];
+  const handleNavClick = useCallback(
+    (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+      e.preventDefault();
+      const wasOpen = mobileOpen;
+      setMobileOpen(false);
+      // Allow menu close animation to finish before scrolling
+      setTimeout(() => {
+        const el = document.querySelector(href);
+        if (el) {
+          const headerHeight = 80;
+          const top = el.getBoundingClientRect().top + window.scrollY - headerHeight;
+          window.scrollTo({ top, behavior: "smooth" });
+        }
+      }, wasOpen ? 350 : 100);
+    },
+    [mobileOpen]
+  );
 
   return (
     <header
       role="banner"
-      className={"fixed top-0 left-0 right-0 z-50 transition-all duration-300 " + headerBg}
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+        mobileOpen
+          ? "bg-transparent"
+          : scrolled
+            ? "bg-white/95 backdrop-blur-md shadow-sm border-b border-slate-200/60"
+            : "bg-transparent"
+      }`}
     >
       <div className="mx-auto flex max-w-7xl items-center justify-between px-5 py-3 lg:px-8">
-        {/* Logo */}
+        {/* Logo — key forces re-mount when logo file updates */}
         <a
           href="#"
           className="flex items-center gap-2.5 text-lg font-bold tracking-tight"
-          aria-label="Stoltzfus Tiles - Home"
+          aria-label="Stoltzfus Custom Tile - Home"
         >
-          <img src="/stoltzfus.png" alt="Stoltzfus Tiles Logo" className="h-24 w-auto" />
+          <Image
+            key="stoltzfus-logo"
+            src="/stoltzfus-logo.png"
+            alt="Stoltzfus Custom Tile Logo"
+            width={800}
+            height={260}
+            priority
+            unoptimized
+            className="h-24 w-auto sm:h-32"
+            style={{ filter: "drop-shadow(0 0 1px rgba(0,0,0,0.8)) drop-shadow(0 0 0.5px rgba(0,0,0,0.6))" }}
+          />
         </a>
 
         {/* Desktop nav */}
@@ -64,104 +85,145 @@ export default function Header() {
               <li key={link.href}>
                 <a
                   href={link.href}
-                  className="text-sm font-medium text-slate-700 transition-colors hover:text-teal-600"
+                  onClick={(e) => handleNavClick(e, link.href)}
+                  className={`nav-link-hover text-sm font-medium transition-colors ${
+                    scrolled
+                      ? "text-slate-700 hover:text-teal-600"
+                      : "text-white/90 hover:text-teal-300"
+                  }`}
                 >
                   {link.label}
                 </a>
               </li>
             ))}
             <li>
-              <a
-                href="#contact"
-                className="inline-flex items-center rounded-lg bg-teal-600 px-5 py-2 text-sm font-semibold text-white shadow-md transition-all hover:bg-teal-700 hover:shadow-lg"
-              >
-                Free Estimate
-              </a>
+              <div className="relative rounded-lg p-[2px] overflow-hidden">
+                <motion.div
+                  className="absolute inset-[-80%]"
+                  animate={{ rotate: 360 }}
+                  transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
+                  style={{
+                    background:
+                      "conic-gradient(from 0deg, #0d9488, #14b8a6, #2dd4bf, #99f6e4, #ffffff, #99f6e4, #2dd4bf, #14b8a6, #0d9488)",
+                  }}
+                />
+                <a
+                  href="#contact"
+                  onClick={(e) => handleNavClick(e, "#contact")}
+                  className="relative z-10 inline-flex items-center rounded-[6px] bg-teal-600 px-5 py-2 text-sm font-semibold text-white shadow-md transition-colors hover:bg-teal-700"
+                >
+                  Free Estimate
+                </a>
+              </div>
             </li>
           </ul>
         </nav>
 
-        {/* Tile-themed burger button */}
+        {/* Mobile burger */}
         <button
           onClick={() => setMobileOpen((o) => !o)}
-          className="relative z-[60] flex h-10 w-10 items-center justify-center rounded-lg md:hidden"
-          aria-label={mobileOpen ? "Close menu" : "Open menu"}
-          aria-expanded={mobileOpen}
-          aria-controls="mobile-menu"
-        >
-          <div className="grid grid-cols-2 gap-0.75 transition-all duration-300">
-            {tileColors.map((cls, i) => (
-              <span
-                key={i}
-                className={"block h-2.25 w-2.25 rounded-xs transition-all duration-300 " + cls}
-              />
-            ))}
-          </div>
-        </button>
+          className={`relative z-[60] flex h-11 w-11 items-center justify-center rounded-xl md:hidden transition-all duration-200 ${
+            mobileOpen
+              ? "bg-teal-800 text-white shadow-lg shadow-teal-900/30"
+              : scrolled
+                ? "bg-white shadow-md border border-slate-200"
+                : "bg-white/80 backdrop-blur-sm shadow-sm"
+          }`}
+            aria-label={mobileOpen ? "Close menu" : "Open menu"}
+            aria-expanded={mobileOpen}
+            aria-controls="mobile-menu"
+          >            {mobileOpen ? (
+              <svg className="h-5 w-5 text-teal-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            ) : (
+              <svg className="h-5 w-5" viewBox="0 0 20 20" fill="none">
+                <rect x="2" y="2" width="7" height="7" rx="1.5" fill="#0d9488" />
+                <rect x="11" y="2" width="7" height="7" rx="1.5" fill="#0d9488" opacity="0.7" />
+                <rect x="2" y="11" width="7" height="7" rx="1.5" fill="#0d9488" opacity="0.7" />
+                <rect x="11" y="11" width="7" height="7" rx="1.5" fill="#0d9488" opacity="0.5" />
+              </svg>
+            )}
+          </button>
       </div>
 
-      {/* Mobile menu - Dark Slate Background */}
+      {/* Mobile slide-in sidebar */}
       <AnimatePresence>
         {mobileOpen && (
-          <motion.div
-            id="mobile-menu"
-            role="dialog"
-            aria-modal="true"
-            aria-label="Mobile navigation"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
-            className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-slate-900/98 backdrop-blur-lg md:hidden"
-          >
-            {/* Tile pattern bg */}
-            <div
-              className="absolute inset-0 opacity-[0.05]"
-              aria-hidden="true"
-              style={{
-                background:
-                  "repeating-conic-gradient(#14b8a6 0% 25%, transparent 0% 50%) 0 0 / 48px 48px",
-              }}
+          <>
+            {/* Backdrop */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              className="fixed inset-0 z-40 bg-black/40 backdrop-blur-sm md:hidden"
+              onClick={closeMobile}
             />
 
-            <nav aria-label="Mobile navigation" className="relative z-10">
-              <ul className="flex flex-col items-center gap-6" role="list">
-                {navLinks.map((link, i) => (
-                  <motion.li
-                    key={link.href}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.05 + i * 0.06, duration: 0.35 }}
-                  >
-                    <a
-                      href={link.href}
-                      onClick={closeMobile}
-                      className="flex items-center gap-3 text-2xl font-semibold text-slate-100 transition-colors hover:text-teal-400"
+              {/* Mobile side panel — dark teal theme matching hero */}
+            <motion.div
+              id="mobile-menu"
+              role="dialog"
+              aria-modal="true"
+              aria-label="Mobile navigation"
+              initial={{ x: "100%" }}
+              animate={{ x: 0 }}
+              exit={{ x: "100%" }}
+              transition={{ type: "spring", damping: 34, stiffness: 320 }}
+              className="fixed top-0 right-0 z-[55] flex h-dvh w-80 max-w-[86vw] flex-col border-l border-teal-800/40 shadow-2xl md:hidden"
+              style={{ background: "radial-gradient(ellipse at top right, #0f4c46 0%, #0d2d39 50%, #0b1e2d 100%)" }}
+            >
+              {/* Header */}
+              <div className="border-b border-teal-700/30 px-6 py-5">
+                <p className="text-sm font-semibold tracking-wide text-white">Menu</p>
+                <p className="mt-1 text-xs text-teal-300/60">Stoltzfus Custom Tile</p>
+              </div>
+
+              {/* Nav links */}
+              <nav aria-label="Mobile navigation" className="flex-1 px-5 pt-6">
+                <ul className="flex flex-col gap-1" role="list">
+                  {navLinks.map((link, i) => (
+                    <motion.li
+                      key={link.href}
+                      initial={{ opacity: 0, x: 16 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: 0.08 + i * 0.05, duration: 0.3 }}
                     >
-                      <span
-                        className="inline-block h-3 w-3 rounded-xs bg-teal-500/20"
-                        aria-hidden="true"
-                      />
-                      {link.label}
-                    </a>
-                  </motion.li>
-                ))}
-                <motion.li
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.4, duration: 0.35 }}
+                      <a
+                        href={link.href}
+                        onClick={(e) => handleNavClick(e, link.href)}
+                        className="flex items-center rounded-xl px-4 py-3.5 text-[15px] font-medium text-teal-100/90 transition-colors hover:bg-teal-500/15 hover:text-white"
+                      >
+                        {link.label}
+                      </a>
+                    </motion.li>
+                  ))}
+                </ul>
+
+                <motion.div
+                  initial={{ opacity: 0, x: 16 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.3, duration: 0.3 }}
+                  className="mt-6 px-2"
                 >
                   <a
                     href="#contact"
-                    onClick={closeMobile}
-                    className="mt-6 inline-flex items-center rounded-xl bg-teal-500 px-8 py-3.5 text-lg font-semibold text-slate-900 shadow-lg transition hover:bg-teal-400"
+                    onClick={(e) => handleNavClick(e, "#contact")}
+                    className="flex w-full items-center justify-center rounded-xl bg-teal-600 px-6 py-3.5 text-sm font-semibold text-white shadow-lg shadow-teal-900/30 transition-all hover:bg-teal-500"
                   >
-                    Free Estimate
+                    Get Free Estimate
                   </a>
-                </motion.li>
-              </ul>
-            </nav>
-          </motion.div>
+                </motion.div>
+              </nav>
+
+              {/* Footer info */}
+              <div className="border-t border-teal-700/30 px-6 py-5">
+                <p className="text-xs font-medium text-teal-200/70">Stoltzfus Custom Tile</p>
+                <p className="mt-1 text-[11px] text-teal-400/40">Lancaster County, PA</p>
+              </div>
+            </motion.div>
+          </>
         )}
       </AnimatePresence>
     </header>
